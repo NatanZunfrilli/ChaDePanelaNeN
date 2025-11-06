@@ -98,18 +98,29 @@
     <script type="module">
         // Importa as funções essenciais do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Ativar logs para depuração (opcional, mas útil)
         setLogLevel('Debug');
 
-        // Variáveis globais (Obrigatórias do ambiente Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+        // ==================================================================================
+        // CREDENCIAIS DO FIREBASE FORNECIDAS PELO USUÁRIO (PROJETO: chadepanela-eeb39)
+        // ==================================================================================
+        const YOUR_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAJbot5DSBGBRhXlBEcr4F_isF-_A4OjNU",
+            authDomain: "chadepanela-eeb39.firebaseapp.com",
+            projectId: "chadepanela-eeb39",
+            storageBucket: "chadepanela-eeb39.firebasestorage.app",
+            messagingSenderId: "399914997485",
+            appId: "1:399914997485:web:3ebae86744dc9aec21dee4"
+        };
+        
+        const firebaseConfig = YOUR_FIREBASE_CONFIG;
+        // O appId é usado para criar o caminho da coleção (artifacts/{appId}/...)
+        const appId = YOUR_FIREBASE_CONFIG.projectId; 
+        
         // Variáveis do Firebase e do Estado do App (Declaradas como 'let' no escopo do módulo)
         let app, db, auth;
         let GIFT_ITEMS_COLLECTION_REF;
@@ -240,7 +251,7 @@
          */
         async function initializeGiftList() {
             try {
-                // Tenta buscar o primeiro documento (para checar se a coleção não está vazia)
+                // Tenta buscar o documento de checagem para ver se já inicializou
                 const docRef = doc(GIFT_ITEMS_COLLECTION_REF, 'initializer_check');
                 const docSnap = await getDoc(docRef);
 
@@ -255,7 +266,6 @@
                 await setDoc(docRef, { initialized: true });
 
                 for (const gift of INITIAL_GIFTS) {
-                    // Para garantir IDs únicos e evitar problemas de transação, usa doc() sem ID
                     const newDocRef = doc(GIFT_ITEMS_COLLECTION_REF); // Deixa o Firebase gerar um ID único
                     await setDoc(newDocRef, gift);
                 }
@@ -296,7 +306,6 @@
 
             try {
                 // Usa uma transação para garantir que a atualização só ocorra
-                // se o presente AINDA estiver não reivindicado.
                 await runTransaction(db, async (transaction) => {
                     const giftDoc = await transaction.get(giftRef);
 
@@ -335,50 +344,14 @@
             }
         });
 
-        // --- Autenticação e Listener de Dados ---
-
-        if (!firebaseConfig) {
-            document.getElementById('loading-status').textContent = 'Erro: Configuração do Firebase não encontrada.';
-            console.error('Firebase config not found.');
-            document.getElementById('error-text').textContent = 'Erro de configuração do aplicativo.';
+        /**
+         * Função para exibir erro de configuração (agora apenas como fallback)
+         */
+        function showConfigError() {
+            document.getElementById('loading-status').textContent = 'Erro: Falha na configuração do Firebase.';
+            console.error('Firebase config check failed.');
+            document.getElementById('error-text').textContent = 'Erro de inicialização: Verifique suas chaves de configuração no código-fonte.';
             document.getElementById('error-message').classList.remove('hidden');
-            // Removemos o 'return;' ilegal
-        } else {
-            // 1. Inicializa o Firebase
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // Referência à coleção pública de presentes
-            GIFT_ITEMS_COLLECTION_REF = collection(db, 'artifacts', appId, 'public', 'data', 'gift_items');
-            
-            // 1. Configurar autenticação
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    // Usuário autenticado (anônimo ou via token)
-                    currentUserId = user.uid;
-                    document.getElementById('user-id-display').textContent = user.uid;
-                    
-                    // 2. Inicializa e Sincroniza a Lista (só depois de saber o userId)
-                    await initializeGiftList();
-                    listenForGiftChanges();
-
-                } else {
-                    // Tenta login com token personalizado (se disponível) ou anônimo
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Erro de autenticação:", error);
-                        document.getElementById('loading-status').textContent = 'Erro: Falha na autenticação. Verifique os logs.';
-                        document.getElementById('error-text').textContent = `Erro de autenticação: ${error.message}`;
-                        document.getElementById('error-message').classList.remove('hidden');
-                    }
-                }
-            });
         }
 
         /**
@@ -404,6 +377,58 @@
                 document.getElementById('error-text').textContent = `Erro de sincronização: ${error.message}`;
                 document.getElementById('error-message').classList.remove('hidden');
             });
+        }
+        
+        /**
+         * Função principal de inicialização do aplicativo.
+         */
+        function setupApp() {
+            // 1. Inicializa o Firebase
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Referência à coleção pública de presentes
+            GIFT_ITEMS_COLLECTION_REF = collection(db, 'artifacts', appId, 'public', 'data', 'gift_items');
+            
+            // 2. Configurar autenticação
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Usuário autenticado (anônimo)
+                    currentUserId = user.uid;
+                    document.getElementById('user-id-display').textContent = user.uid;
+                    
+                    // 3. Inicializa e Sincroniza a Lista (só depois de saber o userId)
+                    await initializeGiftList();
+                    listenForGiftChanges();
+
+                } else {
+                    // Tenta login anônimo (padrão para ambientes externos)
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (error) {
+                        console.error("Erro de autenticação anônima:", error);
+                        
+                        let userFriendlyMessage = `Erro de autenticação: ${error.message}`;
+
+                        // MELHORIA: Checa o erro específico de configuração para dar uma dica mais útil ao usuário.
+                        if (error.code === 'auth/configuration-not-found') {
+                            userFriendlyMessage = `Erro Crítico (Auth/Configuration-Not-Found): Por favor, vá no seu Console do Firebase > Authentication > Sign-in method e ative o provedor 'Anonymous'.`;
+                        }
+                        
+                        document.getElementById('loading-status').textContent = 'Erro: Falha na autenticação. Verifique os logs.';
+                        document.getElementById('error-text').textContent = userFriendlyMessage;
+                        document.getElementById('error-message').classList.remove('hidden');
+                    }
+                }
+            });
+        }
+
+        // --- Checagem e Inicialização Principal ---
+        if (!firebaseConfig || !firebaseConfig.projectId) {
+            showConfigError();
+        } else {
+            setupApp();
         }
     </script>
 
