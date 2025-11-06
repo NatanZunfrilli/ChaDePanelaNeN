@@ -200,7 +200,7 @@
             // Classes e textos baseados no status. Usa a cor 'casamento' para RESERVADO.
             const statusClass = isClaimed ? 'bg-casamento-200 text-casamento-800' : 'bg-green-200 text-green-800';
             const statusText = isClaimed ? 'Reservado' : 'Disponível';
-            const actionText = isClaimed ? (gift.claimantName || 'Alguém') : 'Reservar Item';
+            const actionText = isClaimed ? (gift.claimantName || 'Alguém') : 'Escolher Item';
             // Cor do botão de ação. Usa a cor 'casamento' para RESERVAR.
             const buttonColor = isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-casamento-500 hover:bg-casamento-700 shadow-md shadow-casamento-300';
 
