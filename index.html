@@ -4,10 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Presentes do Chá de Panela</title>
-    <!-- Carrega o Tailwind CSS para estilização fácil e responsiva -->
+    <!-- 1. CARREGAR FONTE CUSTOMIZADA (Usando Great Vibes como substituto elegante para Riley) -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Configuração e Carregamento do Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuração customizada do Tailwind para definir a cor verde do usuário
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Paleta personalizada baseada em rgb(112, 145, 110)
+                        'casamento': {
+                            100: '#e6f0e6', // Muito claro (para fundos de alerta)
+                            200: '#c5dac4', // Claro (para fundo de status reservado)
+                            300: '#a3c3a2', // Sombra
+                            500: '#70916e', // Base (A cor exata do usuário)
+                            600: '#648262', // Botões e Modal BG
+                            700: '#587356', // Hover e Textos Escuros
+                            800: '#4c644a', // Texto mais escuro (status reservado)
+                        },
+                    },
+                    // 2. Adicionar a fonte customizada ao Tailwind
+                    fontFamily: {
+                        'riley-substitute': ['"Great Vibes"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Define a fonte Inter como padrão */
+        /* Define a fonte Inter como padrão para o corpo, exceto onde especificado */
         :root {
             font-family: 'Inter', sans-serif;
         }
@@ -16,30 +43,54 @@
             width: 8px;
         }
         ::-webkit-scrollbar-thumb {
-            background-color: #fca5a5; /* Rosa claro */
+            /* Cor do scrollbar combinando com a nova paleta */
+            background-color: #a3c3a2; 
             border-radius: 4px;
         }
         .text-shadow-custom {
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
-        /* Cor de fundo suave */
+        /* Cor de fundo suave (Fundo da página geral) */
         body {
             background-color: #fef2f2;
+        }
+        
+        /* 3. Aumentar o tamanho da fonte no header para script fonts */
+        .header-title {
+            font-size: 2.75rem; /* Ajuste para ter um bom impacto visual com fonte script */
+        }
+
+        /* Ajuste para mobile */
+        @media (max-width: 640px) {
+             .header-title {
+                font-size: 2.25rem;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-    <!-- Cabeçalho (Header) -->
-    <header class="bg-red-500 shadow-lg sticky top-0 z-10">
+    <!-- Cabeçalho (Header) - Agora em verde "casamento-500" -->
+    <header class="bg-casamento-500 shadow-lg sticky top-0 z-10">
         <div class="max-w-4xl mx-auto p-4 flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-white text-shadow-custom">
+            <!-- 4. Aplicar a nova classe de fonte e classe de tamanho customizada -->
+            <h1 class="header-title font-riley-substitute font-extrabold text-white text-shadow-custom">
                 Lista de Presentes
             </h1>
             <div class="text-right">
-                <!-- Ícone de Panela (SVG simples) -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-white">
-                    <path fill-rule="evenodd" d="M13.292 3.275a2.25 2.25 0 0 0-4.584 0l-1.01.631a.75.75 0 0 1-.954.067L4.646 2.56a.75.75 0 0 0-1.077.301l-1.353 3.011a.75.75 0 0 0 .195.836l1.373 1.109a.75.75 0 0 1 .1.879l-.794 1.838a.75.75 0 0 0 .221.849l2.768 2.378a.75.75 0 0 1 .13.882l-1.034 2.176a.75.75 0 0 0-.012.72l.418 1.121A2.25 2.25 0 0 0 8.85 20.25h6.3c.792 0 1.488-.475 1.802-1.185l.418-1.121a.75.75 0 0 0-.012-.72l-1.034-2.176a.75.75 0 0 1 .13-.882l2.768-2.378a.75.75 0 0 0 .221-.85l-.794-1.837a.75.75 0 0 1 .1-.88l1.373-1.108a.75.75 0 0 0 .195-.836l-1.353-3.011a.75.75 0 0 0-1.077-.301l-2.092 1.358a.75.75 0 0 1-.954-.067l-1.01-.632ZM12 12c.828 0 1.5.672 1.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 1.5-1.5Z" clip-rule="evenodd" />
+                <!-- Ícone da Marca (Monograma N & N - SVG Inline) -->
+                <!-- Este SVG simula o visual do seu anexo (coroa de folhas/monograma) -->
+                <!-- Para usar a sua imagem real, substitua este bloco por: <img src="URL_DA_SUA_IMAGEM" alt="Logo do Casamento" class="w-10 h-10 rounded-full border-2 border-white shadow-lg"> -->
+                <svg class="w-10 h-10 border-2 border-white rounded-full p-0.5 shadow-lg bg-white" viewBox="0 0 100 100" aria-labelledby="title">
+                    <title id="title">Logo N & N</title>
+                    <!-- Fundo e Borda -->
+                    <circle cx="50" cy="50" r="48" fill="white" stroke="#70916e" stroke-width="2"/>
+                    <!-- Monograma (Estilo Serif para combinar com o anexo) -->
+                    <text x="50" y="32" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="28" fill="#202020" font-weight="bold">N</text>
+                    <text x="50" y="50" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="14" fill="#202020">&</text>
+                    <text x="50" y="72" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="28" fill="#202020" font-weight="bold">N</text>
+                    <!-- Linha decorativa simulando a coroa (Wreath) -->
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#a3c3a2" stroke-width="1.5" stroke-dasharray="1 3"/>
                 </svg>
             </div>
         </div>
@@ -47,21 +98,21 @@
 
     <!-- Seção Principal de Conteúdo -->
     <main class="flex-grow max-w-4xl mx-auto p-4 w-full">
-        <!-- Mensagem de carregamento e erro -->
+        <!-- Mensagem de carregamento e erro - Cores atualizadas -->
         <div id="loading-status" class="text-center p-6 text-gray-600">
             Carregando lista de presentes...
         </div>
-        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <div id="error-message" class="hidden bg-casamento-100 border-l-4 border-casamento-500 text-casamento-700 p-4 mb-4" role="alert">
             <p class="font-bold">Erro de Conexão</p>
             <p id="error-text">Não foi possível carregar a lista. Verifique sua conexão.</p>
         </div>
 
-        <!-- ID do Usuário (Obrigatório para multi-usuário) -->
-        <div class="mb-6 p-3 bg-red-100 text-red-700 rounded-lg shadow-inner">
-            <p class="text-sm font-semibold">Seu ID de Sessão (Importante para uso multi-usuário):</p>
+        <!-- ID do Usuário (Obrigatório para multi-usuário) - Cores atualizadas -->
+        <div class="mb-6 p-3 bg-casamento-100 text-casamento-700 rounded-lg shadow-inner">
+            <p class="text-sm font-semibold">Seu ID de Sessão (Para fins de rastreio de reserva):</p>
             <p id="user-id-display" class="text-xs break-all mt-1 font-mono"></p>
         </div>
-
+        
         <!-- Contêiner da Lista de Presentes -->
         <div id="gift-list-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <!-- Os cartões de presente serão injetados aqui pelo JavaScript -->
@@ -69,15 +120,15 @@
 
     </main>
 
-    <!-- Modal de Reivindicação (Claiming Modal) -->
+    <!-- Modal de Reivindicação (Claiming Modal) - Cores atualizadas -->
     <div id="claim-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
-            <h2 class="text-2xl font-bold mb-4 text-red-600" id="modal-title">Reivindicar Presente</h2>
+            <h2 class="text-2xl font-bold mb-4 text-casamento-600" id="modal-title">Reivindicar Presente</h2>
             <p class="text-gray-700 mb-4">Você está prestes a reservar o item: <strong id="item-name-placeholder"></strong>.</p>
 
             <label for="claimant-name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome:</label>
             <input type="text" id="claimant-name" placeholder="Digite seu nome (ex: Maria)" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4 transition duration-150">
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-casamento-500 mb-4 transition duration-150">
 
             <div class="flex justify-end space-x-3">
                 <button id="cancel-claim" type="button"
@@ -85,12 +136,12 @@
                     Cancelar
                 </button>
                 <button id="confirm-claim" type="button"
-                        class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-150 font-semibold shadow-md shadow-red-300">
+                        class="px-4 py-2 text-white bg-casamento-600 rounded-lg hover:bg-casamento-700 transition duration-150 font-semibold shadow-md shadow-casamento-300">
                     Confirmar Reserva
                 </button>
             </div>
             <!-- Mensagem de erro do modal -->
-            <p id="claim-error" class="hidden text-sm text-red-500 mt-3"></p>
+            <p id="claim-error" class="hidden text-sm text-casamento-500 mt-3"></p>
         </div>
     </div>
 
@@ -127,10 +178,12 @@
         let currentUserId = null;
         let selectedGiftId = null;
 
-        // Lista inicial de presentes (se o banco estiver vazio)
+        // ==================================================================================
+        // LISTA INICIAL DE PRESENTES PARA EDIÇÃO (ADMIN)
+        // EDITE ESTA LISTA DIRETAMENTE NO CÓDIGO para ajustar os presentes.
+        // ==================================================================================
         const INITIAL_GIFTS = [
             { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Teste", claimed: false, claimantName: "", claimantId: "" },
             { name: "Batedeira", claimed: false, claimantName: "", claimantId: "" },
             { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "" },
             { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
@@ -140,6 +193,8 @@
             { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "" },
             { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
             { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Ferro de Passar Roupas", claimed: false, claimantName: "", claimantId: "" },
         ];
         
         // --- Funções de UI ---
@@ -151,20 +206,21 @@
         function renderGiftCard(gift) {
             const isClaimed = gift.claimed;
             
-            // Classes e textos baseados no status
-            const statusClass = isClaimed ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800';
-            const statusText = isClaimed ? 'Escolhido' : 'Disponível';
+            // Classes e textos baseados no status. Usa a cor 'casamento' para RESERVADO.
+            const statusClass = isClaimed ? 'bg-casamento-200 text-casamento-800' : 'bg-green-200 text-green-800';
+            const statusText = isClaimed ? 'Reservado' : 'Disponível';
             const actionText = isClaimed ? (gift.claimantName || 'Alguém') : 'Reservar Item';
-            const buttonColor = isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600 shadow-md shadow-red-300';
+            // Cor do botão de ação. Usa a cor 'casamento' para RESERVAR.
+            const buttonColor = isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-casamento-500 hover:bg-casamento-700 shadow-md shadow-casamento-300';
 
             // Conteúdo do reclamante se estiver reivindicado
             const claimantInfo = isClaimed 
                 ? `<p class="text-sm mt-2 text-gray-700">Reservado por: <span class="font-semibold">${gift.claimantName}</span></p>`
-                : `<p class="text-sm mt-2 text-gray-500">Seja o primeiro a reservar!</p>`;
+                : `<p class="text-sm mt-2 text-gray-500">Toque para reservar seu item!</p>`;
 
 
             return `
-                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between border-t-4 ${isClaimed ? 'border-red-500' : 'border-green-500'}">
+                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between border-t-4 ${isClaimed ? 'border-casamento-500' : 'border-green-500'}">
                     <div>
                         <span class="inline-block px-3 py-1 text-xs font-bold rounded-full ${statusClass} mb-3">
                             ${statusText}
@@ -191,7 +247,7 @@
             document.getElementById('loading-status').classList.add('hidden');
             container.innerHTML = gifts.map(renderGiftCard).join('');
 
-            // Adiciona listeners aos novos botões
+            // Adiciona listeners aos botões "Reservar Item"
             document.querySelectorAll('.claim-button:not([disabled])').forEach(button => {
                 button.addEventListener('click', (e) => {
                     selectedGiftId = e.currentTarget.dataset.id;
@@ -217,7 +273,9 @@
          */
         function openClaimModal(itemName) {
             itemNamePlaceholder.textContent = itemName;
-            claimantNameInput.value = ''; // Limpa o campo
+            // Tenta pré-preencher o nome do usuário se ele já reservou algo antes
+            const storedName = localStorage.getItem('lastClaimantName'); 
+            claimantNameInput.value = storedName || ''; 
             claimError.classList.add('hidden');
             
             claimModal.classList.remove('hidden');
@@ -244,9 +302,9 @@
         }
 
         cancelClaimButton.addEventListener('click', closeClaimModal);
-
+        
         // --- Funções do Firebase/Firestore ---
-
+        
         /**
          * Popula o banco de dados com a lista inicial se estiver vazio.
          */
@@ -257,17 +315,18 @@
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    console.log("A coleção já existe. Não é necessário inicializar.");
+                    // Já inicializado, apenas retorna
                     return;
                 }
 
-                console.log("Coleção vazia. Inicializando com presentes padrão...");
+                console.log("Coleção vazia. Inicializando com presentes padrão da lista INITIAL_GIFTS...");
 
-                // Adiciona um documento marcador e depois os itens
+                // Adiciona um documento marcador para evitar repopulação
                 await setDoc(docRef, { initialized: true });
 
                 for (const gift of INITIAL_GIFTS) {
-                    const newDocRef = doc(GIFT_ITEMS_COLLECTION_REF); // Deixa o Firebase gerar um ID único
+                    // Adiciona cada presente com um ID gerado pelo Firebase
+                    const newDocRef = doc(GIFT_ITEMS_COLLECTION_REF);
                     await setDoc(newDocRef, gift);
                 }
 
@@ -298,6 +357,9 @@
                 claimError.classList.remove('hidden');
                 return;
             }
+
+            // Salva o nome do usuário no local storage para auto-preenchimento
+            localStorage.setItem('lastClaimantName', claimantName);
             
             // Desativa o botão para evitar cliques duplos
             confirmClaimButton.disabled = true;
@@ -346,7 +408,7 @@
         });
 
         /**
-         * Função para exibir erro de configuração (agora apenas como fallback)
+         * Função para exibir erro de configuração (apenas como fallback)
          */
         function showConfigError() {
             document.getElementById('loading-status').textContent = 'Erro: Falha na configuração do Firebase.';
@@ -374,8 +436,16 @@
                 updateGiftListUI(gifts);
             }, (error) => {
                 console.error("Erro no listener do Firestore:", error);
-                document.getElementById('loading-status').textContent = 'Erro: Falha ao sincronizar dados. Verifique sua conexão.';
-                document.getElementById('error-text').textContent = `Erro de sincronização: ${error.message}`;
+                
+                let userFriendlyMessage = `Erro de sincronização: ${error.message}`;
+
+                // Adição para verificar erro de permissão do Firestore (Importante para o usuário)
+                if (error.code === 'permission-denied') {
+                     userFriendlyMessage = `Erro Crítico (Permission Denied): Por favor, verifique se as Regras de Segurança do Firestore (chadepanela-eeb39) permitem a leitura e escrita para usuários autenticados ('allow read, write: if request.auth != null;').`;
+                }
+
+                document.getElementById('loading-status').textContent = 'Erro: Falha ao sincronizar dados.';
+                document.getElementById('error-text').textContent = userFriendlyMessage;
                 document.getElementById('error-message').classList.remove('hidden');
             });
         }
@@ -412,7 +482,7 @@
                         
                         let userFriendlyMessage = `Erro de autenticação: ${error.message}`;
 
-                        // MELHORIA: Checa o erro específico de configuração para dar uma dica mais útil ao usuário.
+                        // Dica útil para o erro de configuração de autenticação
                         if (error.code === 'auth/configuration-not-found') {
                             userFriendlyMessage = `Erro Crítico (Auth/Configuration-Not-Found): Por favor, vá no seu Console do Firebase > Authentication > Sign-in method e ative o provedor 'Anonymous'.`;
                         }
