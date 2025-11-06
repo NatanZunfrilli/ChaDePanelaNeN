@@ -182,7 +182,6 @@
         // ==================================================================================
         // LISTA INICIAL DE PRESENTES PARA EDIÇÃO (ADMIN)
         // EDITE ESTA LISTA DIRETAMENTE NO CÓDIGO para ajustar os presentes.
-        // NOVOS: Adicionado o campo 'imageUrl' para cada item.
         // ==================================================================================
         const INITIAL_GIFTS = [
             // Dica: Substitua 'https://placehold.co/...' pelas URLs reais das suas imagens.
@@ -259,7 +258,25 @@
          */
         function updateGiftListUI(gifts) {
             const container = document.getElementById('gift-list-container');
-            document.getElementById('loading-status').classList.add('hidden');
+            const loadingStatus = document.getElementById('loading-status');
+            
+            loadingStatus.classList.add('hidden'); // Esconde o status de carregamento
+
+            if (gifts.length === 0) {
+                 // SE VAZIO: Mostra uma mensagem amigável (ajuda a diagnosticar falha de inicialização)
+                 container.innerHTML = `
+                    <div class="col-span-full text-center p-10 bg-casamento-100 rounded-xl shadow-inner border border-casamento-300">
+                        <svg class="w-10 h-10 mx-auto text-casamento-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10m0-6h.01"></path></svg>
+                        <p class="text-xl font-bold text-casamento-700 mb-2">Lista Vazia!</p>
+                        <p class="text-gray-600">
+                            Parece que os presentes não foram carregados do banco de dados. 
+                            <span class="font-semibold">Verifique o Console do Firebase > Firestore para confirmar se a coleção 'gift_items' existe e se as Regras de Segurança permitem escrita (write) para usuários autenticados.</span>
+                        </p>
+                    </div>
+                 `;
+                 return;
+            }
+
             container.innerHTML = gifts.map(renderGiftCard).join('');
 
             // Adiciona listeners aos botões "Reservar Item"
@@ -322,35 +339,40 @@
         
         /**
          * Popula o banco de dados com a lista inicial se estiver vazio.
+         * LÓGICA REFINADA: Apenas define o marcador de inicialização após a escrita bem-sucedida de todos os presentes.
          */
         async function initializeGiftList() {
             try {
-                // Tenta buscar o documento de checagem para ver se já inicializou
+                // 1. Checa se o marcador de inicialização existe
                 const docRef = doc(GIFT_ITEMS_COLLECTION_REF, 'initializer_check');
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    // Já inicializado, apenas retorna
                     return;
                 }
 
-                console.log("Coleção vazia. Inicializando com presentes padrão da lista INITIAL_GIFTS...");
+                console.log("Coleção vazia. Inicializando com presentes padrão...");
 
-                // Adiciona um documento marcador para evitar repopulação
-                await setDoc(docRef, { initialized: true });
-
-                for (const gift of INITIAL_GIFTS) {
-                    // Adiciona cada presente com um ID gerado pelo Firebase
+                // 2. Cria promessas para a escrita de TODOS os presentes
+                const giftPromises = INITIAL_GIFTS.map(gift => {
                     const newDocRef = doc(GIFT_ITEMS_COLLECTION_REF);
-                    await setDoc(newDocRef, gift);
-                }
+                    return setDoc(newDocRef, gift);
+                });
+                
+                // 3. Espera que TODOS os presentes sejam escritos
+                await Promise.all(giftPromises); 
+
+                // 4. Adiciona o documento marcador SOMENTE SE todos os presentes foram escritos com sucesso
+                await setDoc(docRef, { initialized: true }); 
 
                 console.log("Lista inicial de presentes adicionada com sucesso.");
 
             } catch (e) {
-                console.error("Erro ao inicializar a lista:", e);
-                document.getElementById('error-text').textContent = `Erro ao inicializar a lista: ${e.message}`;
+                console.error("Erro CRÍTICO ao inicializar a lista (Verifique as Regras de Escrita!):", e);
+                // Exibe o erro crítico na UI para o administrador
+                document.getElementById('error-text').textContent = `Erro CRÍTICO na Inicialização. Causa provável: Regras de segurança impedindo a ESCRITA (write). Erro: ${e.message}`;
                 document.getElementById('error-message').classList.remove('hidden');
+                throw e; // Re-lança para notificar o caller
             }
         }
 
@@ -459,10 +481,10 @@
 
                 // Adição para verificar erro de permissão do Firestore (Importante para o usuário)
                 if (error.code === 'permission-denied') {
-                     userFriendlyMessage = `Erro Crítico (Permission Denied): Por favor, verifique se as Regras de Segurança do Firestore (chadepanela-eeb39) permitem a leitura para usuários autenticados ('allow read: if request.auth != null;').`;
+                     userFriendlyMessage = `Erro Crítico (Permission Denied): Por favor, verifique se as Regras de Segurança do Firestore (chadepanela-eeb39) permitem a LEITURA ('allow read: if request.auth != null;').`;
                 }
 
-                document.getElementById('loading-status').textContent = 'Erro: Falha ao sincronizar dados.';
+                document.getElementById('loading-status').classList.add('hidden');
                 document.getElementById('error-text').textContent = userFriendlyMessage;
                 document.getElementById('error-message').classList.remove('hidden');
             }
@@ -476,7 +498,7 @@
         }
 
         /**
-         * Função principal de inicialização do aplicativo. (REESTRUTURADA)
+         * Função principal de inicialização do aplicativo.
          */
         async function setupApp() {
             // 1. Inicializa o Firebase
