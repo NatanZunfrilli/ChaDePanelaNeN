@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Presentes do Chá de Panela</title>
+    <!-- Carrega o Tailwind CSS para estilização fácil e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a fonte Inter como padrão */
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilos de scrollbar simples */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #fca5a5; /* Rosa claro */
+            border-radius: 4px;
+        }
+        .text-shadow-custom {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        /* Cor de fundo suave */
+        body {
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Cabeçalho (Header) -->
+    <header class="bg-red-500 shadow-lg sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-white text-shadow-custom">
+                Lista de Presentes
+            </h1>
+            <div class="text-right">
+                <!-- Ícone de Panela (SVG simples) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-white">
+                    <path fill-rule="evenodd" d="M13.292 3.275a2.25 2.25 0 0 0-4.584 0l-1.01.631a.75.75 0 0 1-.954.067L4.646 2.56a.75.75 0 0 0-1.077.301l-1.353 3.011a.75.75 0 0 0 .195.836l1.373 1.109a.75.75 0 0 1 .1.879l-.794 1.838a.75.75 0 0 0 .221.849l2.768 2.378a.75.75 0 0 1 .13.882l-1.034 2.176a.75.75 0 0 0-.012.72l.418 1.121A2.25 2.25 0 0 0 8.85 20.25h6.3c.792 0 1.488-.475 1.802-1.185l.418-1.121a.75.75 0 0 0-.012-.72l-1.034-2.176a.75.75 0 0 1 .13-.882l2.768-2.378a.75.75 0 0 0 .221-.85l-.794-1.837a.75.75 0 0 1 .1-.88l1.373-1.108a.75.75 0 0 0 .195-.836l-1.353-3.011a.75.75 0 0 0-1.077-.301l-2.092 1.358a.75.75 0 0 1-.954-.067l-1.01-.632ZM12 12c.828 0 1.5.672 1.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 1.5-1.5Z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Seção Principal de Conteúdo -->
+    <main class="flex-grow max-w-4xl mx-auto p-4 w-full">
+        <!-- Mensagem de carregamento e erro -->
+        <div id="loading-status" class="text-center p-6 text-gray-600">
+            Carregando lista de presentes...
+        </div>
+        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+            <p class="font-bold">Erro de Conexão</p>
+            <p id="error-text">Não foi possível carregar a lista. Verifique sua conexão.</p>
+        </div>
+
+        <!-- ID do Usuário (Obrigatório para multi-usuário) -->
+        <div class="mb-6 p-3 bg-red-100 text-red-700 rounded-lg shadow-inner">
+            <p class="text-sm font-semibold">Seu ID de Sessão (Importante para uso multi-usuário):</p>
+            <p id="user-id-display" class="text-xs break-all mt-1 font-mono"></p>
+        </div>
+
+        <!-- Contêiner da Lista de Presentes -->
+        <div id="gift-list-container" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Os cartões de presente serão injetados aqui pelo JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Modal de Reivindicação (Claiming Modal) -->
+    <div id="claim-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+            <h2 class="text-2xl font-bold mb-4 text-red-600" id="modal-title">Reivindicar Presente</h2>
+            <p class="text-gray-700 mb-4">Você está prestes a reservar o item: <strong id="item-name-placeholder"></strong>.</p>
+
+            <label for="claimant-name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome:</label>
+            <input type="text" id="claimant-name" placeholder="Digite seu nome (ex: Maria)" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-4 transition duration-150">
+
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-claim" type="button"
+                        class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-150 font-medium">
+                    Cancelar
+                </button>
+                <button id="confirm-claim" type="button"
+                        class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-150 font-semibold shadow-md shadow-red-300">
+                    Confirmar Reserva
+                </button>
+            </div>
+            <!-- Mensagem de erro do modal -->
+            <p id="claim-error" class="hidden text-sm text-red-500 mt-3"></p>
+        </div>
+    </div>
+
+    <!-- Firebase Imports e Scripts JS -->
+    <script type="module">
+        // Importa as funções essenciais do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Ativar logs para depuração (opcional, mas útil)
+        setLogLevel('Debug');
+
+        // Variáveis globais (Obrigatórias do ambiente Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Variáveis do Firebase e do Estado do App (Declaradas como 'let' no escopo do módulo)
+        let app, db, auth;
+        let GIFT_ITEMS_COLLECTION_REF;
+        let currentUserId = null;
+        let selectedGiftId = null;
+
+        // Lista inicial de presentes (se o banco estiver vazio)
+        const INITIAL_GIFTS = [
+            { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Batedeira", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Faça de Corte (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Travessas de Vidro (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Aparelho de Jantar", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
+            { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "" },
+        ];
+        
+        // --- Funções de UI ---
+
+        /**
+         * Renderiza um único cartão de presente.
+         * @param {Object} gift - Objeto do presente com nome, claimed, claimantName, e id.
+         */
+        function renderGiftCard(gift) {
+            const isClaimed = gift.claimed;
+            
+            // Classes e textos baseados no status
+            const statusClass = isClaimed ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800';
+            const statusText = isClaimed ? 'Reivindicado' : 'Disponível';
+            const actionText = isClaimed ? (gift.claimantName || 'Alguém') : 'Reservar Item';
+            const buttonColor = isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600 shadow-md shadow-red-300';
+
+            // Conteúdo do reclamante se estiver reivindicado
+            const claimantInfo = isClaimed 
+                ? `<p class="text-sm mt-2 text-gray-700">Reservado por: <span class="font-semibold">${gift.claimantName}</span></p>`
+                : `<p class="text-sm mt-2 text-gray-500">Seja o primeiro a reservar!</p>`;
+
+
+            return `
+                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between border-t-4 ${isClaimed ? 'border-red-500' : 'border-green-500'}">
+                    <div>
+                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full ${statusClass} mb-3">
+                            ${statusText}
+                        </span>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${gift.name}</h3>
+                        ${claimantInfo}
+                    </div>
+                    <button data-id="${gift.id}" 
+                            data-name="${gift.name}"
+                            ${isClaimed ? 'disabled' : ''}
+                            class="claim-button w-full mt-4 px-4 py-2 text-white font-semibold rounded-lg transition duration-150 ${buttonColor}">
+                        ${actionText}
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
+         * Atualiza a lista de presentes no HTML.
+         * @param {Array} gifts - Array de objetos de presente.
+         */
+        function updateGiftListUI(gifts) {
+            const container = document.getElementById('gift-list-container');
+            document.getElementById('loading-status').classList.add('hidden');
+            container.innerHTML = gifts.map(renderGiftCard).join('');
+
+            // Adiciona listeners aos novos botões
+            document.querySelectorAll('.claim-button:not([disabled])').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    selectedGiftId = e.currentTarget.dataset.id;
+                    const itemName = e.currentTarget.dataset.name;
+                    openClaimModal(itemName);
+                });
+            });
+        }
+        
+        // --- Funções do Modal ---
+
+        const claimModal = document.getElementById('claim-modal');
+        const modalContent = document.getElementById('modal-content');
+        const itemNamePlaceholder = document.getElementById('item-name-placeholder');
+        const claimantNameInput = document.getElementById('claimant-name');
+        const confirmClaimButton = document.getElementById('confirm-claim');
+        const cancelClaimButton = document.getElementById('cancel-claim');
+        const claimError = document.getElementById('claim-error');
+
+        /**
+         * Abre o modal de reivindicação.
+         * @param {string} itemName - Nome do presente a ser reivindicado.
+         */
+        function openClaimModal(itemName) {
+            itemNamePlaceholder.textContent = itemName;
+            claimantNameInput.value = ''; // Limpa o campo
+            claimError.classList.add('hidden');
+            
+            claimModal.classList.remove('hidden');
+            claimModal.classList.add('flex');
+            // Animação de entrada
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        /**
+         * Fecha o modal de reivindicação.
+         */
+        function closeClaimModal() {
+            // Animação de saída
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                claimModal.classList.remove('flex');
+                claimModal.classList.add('hidden');
+                selectedGiftId = null;
+            }, 300);
+        }
+
+        cancelClaimButton.addEventListener('click', closeClaimModal);
+
+        // --- Funções do Firebase/Firestore ---
+
+        /**
+         * Popula o banco de dados com a lista inicial se estiver vazio.
+         */
+        async function initializeGiftList() {
+            try {
+                // Tenta buscar o primeiro documento (para checar se a coleção não está vazia)
+                const docRef = doc(GIFT_ITEMS_COLLECTION_REF, 'initializer_check');
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    console.log("A coleção já existe. Não é necessário inicializar.");
+                    return;
+                }
+
+                console.log("Coleção vazia. Inicializando com presentes padrão...");
+
+                // Adiciona um documento marcador e depois os itens
+                await setDoc(docRef, { initialized: true });
+
+                for (const gift of INITIAL_GIFTS) {
+                    // Para garantir IDs únicos e evitar problemas de transação, usa doc() sem ID
+                    const newDocRef = doc(GIFT_ITEMS_COLLECTION_REF); // Deixa o Firebase gerar um ID único
+                    await setDoc(newDocRef, gift);
+                }
+
+                console.log("Lista inicial de presentes adicionada com sucesso.");
+
+            } catch (e) {
+                console.error("Erro ao inicializar a lista:", e);
+                document.getElementById('error-text').textContent = `Erro ao inicializar a lista: ${e.message}`;
+                document.getElementById('error-message').classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Lógica de reivindicação de presente usando Transação para garantir atomicidade.
+         */
+        confirmClaimButton.addEventListener('click', async () => {
+            const claimantName = claimantNameInput.value.trim();
+            claimError.classList.add('hidden');
+
+            if (!claimantName) {
+                claimError.textContent = 'Por favor, insira seu nome para reservar.';
+                claimError.classList.remove('hidden');
+                return;
+            }
+            
+            if (!selectedGiftId) {
+                claimError.textContent = 'Erro interno: Item não selecionado.';
+                claimError.classList.remove('hidden');
+                return;
+            }
+            
+            // Desativa o botão para evitar cliques duplos
+            confirmClaimButton.disabled = true;
+            confirmClaimButton.textContent = 'Reservando...';
+            
+            const giftRef = doc(GIFT_ITEMS_COLLECTION_REF, selectedGiftId);
+
+            try {
+                // Usa uma transação para garantir que a atualização só ocorra
+                // se o presente AINDA estiver não reivindicado.
+                await runTransaction(db, async (transaction) => {
+                    const giftDoc = await transaction.get(giftRef);
+
+                    if (!giftDoc.exists()) {
+                        throw new Error("O presente não existe mais.");
+                    }
+
+                    const data = giftDoc.data();
+
+                    if (data.claimed) {
+                        // Se já estiver reivindicado, cancela a transação e avisa o usuário
+                        throw new Error(`Este presente já foi reservado por ${data.claimantName}!`);
+                    }
+
+                    // Se estiver disponível, reivindica
+                    transaction.update(giftRef, {
+                        claimed: true,
+                        claimantName: claimantName,
+                        claimantId: currentUserId,
+                    });
+                });
+
+                closeClaimModal();
+                // Pequeno feedback visual: item reservado
+
+            } catch (e) {
+                console.error("Erro ao reivindicar presente:", e);
+                // Exibe a mensagem de erro da transação (incluindo "já reivindicado")
+                claimError.textContent = e.message.includes('reservado') 
+                    ? e.message 
+                    : 'Falha ao reservar o item. Tente novamente.';
+                claimError.classList.remove('hidden');
+            } finally {
+                confirmClaimButton.disabled = false;
+                confirmClaimButton.textContent = 'Confirmar Reserva';
+            }
+        });
+
+        // --- Autenticação e Listener de Dados ---
+
+        if (!firebaseConfig) {
+            document.getElementById('loading-status').textContent = 'Erro: Configuração do Firebase não encontrada.';
+            console.error('Firebase config not found.');
+            document.getElementById('error-text').textContent = 'Erro de configuração do aplicativo.';
+            document.getElementById('error-message').classList.remove('hidden');
+            // Removemos o 'return;' ilegal
+        } else {
+            // 1. Inicializa o Firebase
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Referência à coleção pública de presentes
+            GIFT_ITEMS_COLLECTION_REF = collection(db, 'artifacts', appId, 'public', 'data', 'gift_items');
+            
+            // 1. Configurar autenticação
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Usuário autenticado (anônimo ou via token)
+                    currentUserId = user.uid;
+                    document.getElementById('user-id-display').textContent = user.uid;
+                    
+                    // 2. Inicializa e Sincroniza a Lista (só depois de saber o userId)
+                    await initializeGiftList();
+                    listenForGiftChanges();
+
+                } else {
+                    // Tenta login com token personalizado (se disponível) ou anônimo
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Erro de autenticação:", error);
+                        document.getElementById('loading-status').textContent = 'Erro: Falha na autenticação. Verifique os logs.';
+                        document.getElementById('error-text').textContent = `Erro de autenticação: ${error.message}`;
+                        document.getElementById('error-message').classList.remove('hidden');
+                    }
+                }
+            });
+        }
+
+        /**
+         * Configura o listener em tempo real para a lista de presentes.
+         */
+        function listenForGiftChanges() {
+            onSnapshot(GIFT_ITEMS_COLLECTION_REF, (snapshot) => {
+                const gifts = [];
+                snapshot.forEach((doc) => {
+                    // Ignora o documento de inicialização/marcador
+                    if (doc.id !== 'initializer_check') {
+                        gifts.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+
+                // Ordena alfabeticamente
+                gifts.sort((a, b) => a.name.localeCompare(b.name));
+
+                updateGiftListUI(gifts);
+            }, (error) => {
+                console.error("Erro no listener do Firestore:", error);
+                document.getElementById('loading-status').textContent = 'Erro: Falha ao sincronizar dados. Verifique sua conexão.';
+                document.getElementById('error-text').textContent = `Erro de sincronização: ${error.message}`;
+                document.getElementById('error-message').classList.remove('hidden');
+            });
+        }
+    </script>
+
+</body>
+</html>
