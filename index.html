@@ -81,7 +81,7 @@
                 <!-- Ícone da Marca (Monograma N & N - SVG Inline) -->
                 <!-- Este SVG simula o visual do seu anexo (coroa de folhas/monograma) -->
                 <!-- Para usar a sua imagem real, substitua este bloco por: <img src="URL_DA_SUA_IMAGEM" alt="Logo do Casamento" class="w-10 h-10 rounded-full border-2 border-white shadow-lg"> -->
-                <img src="./Images/Icone.png" alt="Logo do Casamento" class="w-28 h-28 object-cover border-2 border-white rounded-full p-0.5 shadow-lg bg-white" />
+                <img src="./Images/Icone.png" alt="Logo do Casamento" class="w-10 h-10 object-cover border-2 border-white rounded-full p-0.5 shadow-lg bg-white" />
             </div>
         </div>
     </header>
@@ -172,20 +172,22 @@
         // ==================================================================================
         // LISTA INICIAL DE PRESENTES PARA EDIÇÃO (ADMIN)
         // EDITE ESTA LISTA DIRETAMENTE NO CÓDIGO para ajustar os presentes.
+        // NOVOS: Adicionado o campo 'imageUrl' para cada item.
         // ==================================================================================
         const INITIAL_GIFTS = [
-            { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Batedeira", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Faça de Corte (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Travessas de Vidro (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Aparelho de Jantar", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "" },
-            { name: "Ferro de Passar Roupas", claimed: false, claimantName: "", claimantId: "" },
+            // Dica: Substitua 'https://placehold.co/...' pelas URLs reais das suas imagens.
+            { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Liquidificador" },
+            { name: "Batedeira", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Batedeira" },
+            { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Jogo+de+Panelas" },
+            { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Toalhas+de+Banho" },
+            { name: "Faça de Corte (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Conjunto+de+Facas" },
+            { name: "Travessas de Vidro (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Travessas+de+Vidro" },
+            { name: "Aparelho de Jantar", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Aparelho+de+Jantar" },
+            { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Copos+e+Taças" },
+            { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Potes+Herméticos" },
+            { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Sanduicheira" },
+            { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Panela+de+Pressão" },
+            { name: "Ferro de Passar Roupas", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://placehold.co/400x300/c5dac4/4c644a?text=Ferro+de+Passar" },
         ];
         
         // --- Funções de UI ---
@@ -200,6 +202,7 @@
             // Classes e textos baseados no status. Usa a cor 'casamento' para RESERVADO.
             const statusClass = isClaimed ? 'bg-casamento-200 text-casamento-800' : 'bg-green-200 text-green-800';
             const statusText = isClaimed ? 'Reservado' : 'Disponível';
+            // MUDANÇA AQUI: Alterado 'Reservar Item' para 'Escolher Item'
             const actionText = isClaimed ? (gift.claimantName || 'Alguém') : 'Escolher Item';
             // Cor do botão de ação. Usa a cor 'casamento' para RESERVAR.
             const buttonColor = isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-casamento-500 hover:bg-casamento-700 shadow-md shadow-casamento-300';
@@ -212,6 +215,16 @@
 
             return `
                 <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between border-t-4 ${isClaimed ? 'border-casamento-500' : 'border-green-500'}">
+                    
+                    <!-- NOVO: Imagem do Produto -->
+                    <div class="mb-4 overflow-hidden rounded-lg shadow-md aspect-[4/3] bg-gray-100">
+                        <img src="${gift.imageUrl || 'https://placehold.co/400x300/cccccc/333333?text=Sem+Imagem'}" 
+                             alt="Imagem de ${gift.name}" 
+                             class="w-full h-full object-cover transition duration-300 hover:scale-[1.03]"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x300/cccccc/333333?text=Imagem+Indisponível';"
+                        >
+                    </div>
+
                     <div>
                         <span class="inline-block px-3 py-1 text-xs font-bold rounded-full ${statusClass} mb-3">
                             ${statusText}
