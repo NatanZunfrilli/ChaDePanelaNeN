@@ -81,12 +81,21 @@
                 <!-- Ícone da Marca (Monograma N & N - SVG Inline) -->
                 <!-- Este SVG simula o visual do seu anexo (coroa de folhas/monograma) -->
                 <!-- Para usar a sua imagem real, substitua este bloco por: <img src="URL_DA_SUA_IMAGEM" alt="Logo do Casamento" class="w-10 h-10 rounded-full border-2 border-white shadow-lg"> -->
-                <img src="./Images/Icone.png" alt="Logo do Casamento" class="w-28 h-28 object-cover border-2 border-white rounded-full p-0.5 shadow-lg bg-white" />
+                <svg class="w-10 h-10 border-2 border-white rounded-full p-0.5 shadow-lg bg-white" viewBox="0 0 100 100" aria-labelledby="title">
+                    <title id="title">Logo N & N</title>
+                    <!-- Fundo e Borda -->
+                    <circle cx="50" cy="50" r="48" fill="white" stroke="#70916e" stroke-width="2"/>
+                    <!-- Monograma (Estilo Serif para combinar com o anexo) -->
+                    <text x="50" y="32" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="28" fill="#202020" font-weight="bold">N</text>
+                    <text x="50" y="50" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="14" fill="#202020">&</text>
+                    <text x="50" y="72" dominant-baseline="central" text-anchor="middle" font-family="serif" font-size="28" fill="#202020" font-weight="bold">N</text>
+                    <!-- Linha decorativa simulando a coroa (Wreath) -->
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#a3c3a2" stroke-width="1.5" stroke-dasharray="1 3"/>
+                </svg>
             </div>
         </div>
     </header>
 
- 
     <!-- Seção Principal de Conteúdo -->
     <main class="flex-grow max-w-4xl mx-auto p-4 w-full">
         <!-- Mensagem de carregamento e erro - Cores atualizadas -->
@@ -140,8 +149,8 @@
     <script type="module">
         // Importa as funções essenciais do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // IMPORTANTE: Trocamos onSnapshot por getDocs para reduzir o risco de custo (Polling vs Real-Time)
+        // REMOVEMOS onAuthStateChanged pois usaremos signInAnonymously sequencialmente
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
         import { getFirestore, collection, getDocs, doc, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
@@ -450,7 +459,7 @@
 
                 // Adição para verificar erro de permissão do Firestore (Importante para o usuário)
                 if (error.code === 'permission-denied') {
-                     userFriendlyMessage = `Erro Crítico (Permission Denied): Por favor, verifique se as Regras de Segurança do Firestore (chadepanela-eeb39) permitem a leitura e escrita para usuários autenticados ('allow read, write: if request.auth != null;').`;
+                     userFriendlyMessage = `Erro Crítico (Permission Denied): Por favor, verifique se as Regras de Segurança do Firestore (chadepanela-eeb39) permitem a leitura para usuários autenticados ('allow read: if request.auth != null;').`;
                 }
 
                 document.getElementById('loading-status').textContent = 'Erro: Falha ao sincronizar dados.';
@@ -467,9 +476,9 @@
         }
 
         /**
-         * Função principal de inicialização do aplicativo.
+         * Função principal de inicialização do aplicativo. (REESTRUTURADA)
          */
-        function setupApp() {
+        async function setupApp() {
             // 1. Inicializa o Firebase
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
@@ -478,37 +487,33 @@
             // Referência à coleção pública de presentes
             GIFT_ITEMS_COLLECTION_REF = collection(db, 'artifacts', appId, 'public', 'data', 'gift_items');
             
-            // 2. Configurar autenticação
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    // Usuário autenticado (anônimo)
-                    currentUserId = user.uid;
-                    document.getElementById('user-id-display').textContent = user.uid;
-                    
-                    // 3. Inicializa e Sincroniza a Lista (usando Polling)
-                    await initializeGiftList();
-                    startPolling(); // Inicia a busca programada (Polling)
+            // 2. Tenta Autenticar Anonimamente
+            try {
+                const userCredential = await signInAnonymously(auth);
+                const user = userCredential.user;
+                
+                // Se a autenticação for bem-sucedida, continua a inicialização
+                currentUserId = user.uid;
+                document.getElementById('user-id-display').textContent = user.uid;
+                
+                // 3. Inicializa e Sincroniza a Lista
+                await initializeGiftList();
+                startPolling(); // Inicia a busca programada (Polling)
+                
+            } catch (error) {
+                console.error("Erro Crítico de Autenticação:", error);
+                
+                let userFriendlyMessage = `Erro de autenticação: ${error.message}`;
 
-                } else {
-                    // Tenta login anônimo (padrão para ambientes externos)
-                    try {
-                        await signInAnonymously(auth);
-                    } catch (error) {
-                        console.error("Erro de autenticação anônima:", error);
-                        
-                        let userFriendlyMessage = `Erro de autenticação: ${error.message}`;
-
-                        // Dica útil para o erro de configuração de autenticação
-                        if (error.code === 'auth/configuration-not-found') {
-                            userFriendlyMessage = `Erro Crítico (Auth/Configuration-Not-Found): Por favor, vá no seu Console do Firebase > Authentication > Sign-in method e ative o provedor 'Anonymous'.`;
-                        }
-                        
-                        document.getElementById('loading-status').textContent = 'Erro: Falha na autenticação. Verifique os logs.';
-                        document.getElementById('error-text').textContent = userFriendlyMessage;
-                        document.getElementById('error-message').classList.remove('hidden');
-                    }
+                // Adiciona uma dica sobre a causa mais comum de falha no login anônimo
+                if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
+                    userFriendlyMessage = `Erro Crítico (Auth): Por favor, ative o provedor 'Anonymous' no seu Console do Firebase (Authentication > Sign-in method).`;
                 }
-            });
+
+                document.getElementById('loading-status').classList.add('hidden');
+                document.getElementById('error-text').textContent = userFriendlyMessage;
+                document.getElementById('error-message').classList.remove('hidden');
+            }
         }
 
         // --- Checagem e Inicialização Principal ---
