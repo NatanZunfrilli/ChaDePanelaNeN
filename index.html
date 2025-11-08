@@ -60,6 +60,18 @@
             font-size: 2.75rem; /* Ajuste para ter um bom impacto visual com fonte script */
         }
 
+        /* NOVO: Fundo do cabeçalho com o ícone (Placeholder) */
+        .header-bg {
+            /* A cor base ainda é a verde, mas adicionamos um fundo sutil do ícone */
+            background-color: #70916e; 
+            /* ATUALIZADO: Usando a imagem Icone.png do Canvas como background sutil */
+            background-image: url('uploaded:Icone.png-a7b787e8-a81d-45a4-8e29-0a012a37c2b1'); 
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: multiply; /* Mistura a cor e a imagem de fundo */
+        }
+
+
         /* Ajuste para mobile */
         @media (max-width: 640px) {
              .header-title {
@@ -70,18 +82,19 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-    <!-- Cabeçalho (Header) - Agora em verde "casamento-500" -->
-    <header class="bg-casamento-500 shadow-lg sticky top-0 z-10">
+    <!-- Cabeçalho (Header) - AGORA USANDO A NOVA CLASSE DE FUNDO -->
+    <header class="header-bg shadow-lg sticky top-0 z-10">
         <div class="max-w-4xl mx-auto p-4 flex justify-between items-center">
             <!-- 4. Aplicar a nova classe de fonte e classe de tamanho customizada -->
             <h1 class="header-title font-riley-substitute font-extrabold text-white text-shadow-custom">
                 Lista de Presentes
             </h1>
             <div class="text-right">
-                <!-- Ícone da Marca (Monograma N & N - SVG Inline) -->
-                <!-- Este SVG simula o visual do seu anexo (coroa de folhas/monograma) -->
-                <!-- Para usar a sua imagem real, substitua este bloco por: <img src="URL_DA_SUA_IMAGEM" alt="Logo do Casamento" class="w-10 h-10 rounded-full border-2 border-white shadow-lg"> -->
-                <img src="./Images/Icone.png" alt="Logo do Casamento" class="w-28 h-28 object-cover border-2 border-white rounded-full p-0.5 shadow-lg bg-white" />
+                <!-- Ícone da Marca (Monograma N & N - Imagem real) -->
+                <img src="uploaded:Icone.png-a7b787e8-a81d-45a4-8e29-0a012a37c2b1" 
+                     alt="Logo do Casamento N & N" 
+                     class="w-10 h-10 rounded-full border-2 border-white shadow-lg p-0.5 bg-white"
+                     onerror="this.onerror=null; this.src='https://placehold.co/100x100/ffffff/70916e?text=Icone';">
             </div>
         </div>
     </header>
@@ -115,6 +128,16 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
             <h2 class="text-2xl font-bold mb-4 text-casamento-600" id="modal-title">Reivindicar Presente</h2>
             <p class="text-gray-700 mb-4">Você está prestes a reservar o item: <strong id="item-name-placeholder"></strong>.</p>
+
+            <!-- NOVO: Container para as opções de imagem -->
+            <div id="image-options-container" class="mb-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                <p class="text-sm font-semibold text-gray-700 mb-2">Opções de Imagem/Estilo:</p>
+                <!-- Galeria de imagens -->
+                <div id="image-gallery" class="grid grid-cols-2 gap-2">
+                    <!-- Imagens serão injetadas aqui -->
+                </div>
+            </div>
+            <!-- Fim do NOVO Container -->
 
             <label for="claimant-name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome:</label>
             <input type="text" id="claimant-name" placeholder="Digite seu nome (ex: Maria)" required
@@ -171,44 +194,64 @@
 
         // ==================================================================================
         // LISTA INICIAL DE PRESENTES PARA EDIÇÃO (ADMIN)
-        // EDITE ESTA LISTA DIRETAMENTE NO CÓDIGO para ajustar os presentes.
+        // ATENÇÃO: imageUrl AGORA ACEITA UM ARRAY DE STRINGS (URLs ou sintaxe 'uploaded:')
         // ==================================================================================
         const INITIAL_GIFTS = [
-            // Dica: Substitua 'https://placehold.co/...' pelas URLs reais das suas imagens.
-            { name: "Jogo de Copos Grande", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://images.tcdn.com.br/img/img_prod/584235/jogo_6_copos_de_vidro_dubai_530ml_nadir_438983924_1_fa43134db4641243d973ca699f9d5221_20250317123318.jpg" },
-            { name: "Jogo de Toalha", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/EeSvXgJgX5XLVf7036swbad4YaSgv_mUtjlFwWSxmrY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90cnVz/c2FyZGkudnRleGFz/c2V0cy5jb20vYXJx/dWl2b3MvaWRzLzE4/MTU2NS01MDAtNTAw/P3Y9NjM4NjcwMzQ5/MDI2OTAwMDAwJndp/ZHRoPTI2OCZoZWln/aHQ9MjY4JmFzcGVj/dD10cnVl" },
-            { name: "Jogo de Toalha", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/7PavyIddk06UExhIuCqrCuR_GjP-KukJ9Vw9aXi2Z60/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2FzYWFsbWVpZGEu/Y29tLmJyL21lZGlh/L2NhdGFsb2cvcHJv/ZHVjdC83LzkvNzkw/OTMwMTYwMDc2Ml8w/MjAyNTA2MjAxODAz/ODE1MC5qcGc_b3B0/aW1pemU9bWVkaXVt/JmZpdD1ib3VuZHMm/aGVpZ2h0PTM2MCZ3/aWR0aD00MDA" },
-            { name: "Frigideiras Anti-Aderente (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/FTIIYPuVP5PQfBXsLwDQ4YYrdkWHbPDmh_6mxxzWZ_w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dW5pdmVyc29kb2xh/ci5jb20uYnIvaW1n/LzIwMjAvMDEvcHJv/ZHV0by82OTg0LzIw/MTk4NjYwLTg4Lmpw/Zz9pbXM9Zml0LWlu/LzEyMTB4" },
-            { name: "Tábua de Passar Roupas", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/wc099psjJhehjmMnKnVZElxHCZ1p18LQNRlV_0myrdM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzYwMjczOC1NTEI4/NTM2NjI3MTI0NV8w/NTIwMjUtRS10YWJ1/YS1kZS1wYXNzYXIt/cm91cGEtdGVjaWRv/LXRlcm1pY28tMi1y/ZWd1bGFnZW5zLXBy/b21vY28ud2VicA" },
-            { name: "Jogo de Talheres Inox-Alumínio", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/lcn_41MHHOwOhTYKoSOoBxwKRsKj21E4emohZXF_0o4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzkxNTMxMy1NTEI1/MTYwNjUwOTkyOV8w/OTIwMjItRS1mYXF1/ZWlyby1seW9uLWNv/bS0yNC1wZWNhcy1l/bS1hY28taW5veC1i/cmlub3gud2VicA" },
-            { name: "Panela de Arroz Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/ClaiSfUTzR8IObmHzrmn6guPzAKtnzb6BYePHVemapo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzY2OTcyNC1NTEE4/MjY1NDE5MTExNl8w/MzIwMjUtVi53ZWJw" },
-            { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/MoJu8MjMstIEh_ho-3GR4oGJpZwScQqUdqIHAbbxjGk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzkyNDI5MS1NTEI5/NDM4MDA5MDAzOV8x/MDIwMjUtVi53ZWJw" },
-            { name: "Batedeira", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/LOoccZsVAdrjY6XgV1D4PBfv93F5yKsRbqbwsMHZsoI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90ZWxo/YW5vcnRlLnZ0ZXhh/c3NldHMuY29tL2Fy/cXVpdm9zL2lkcy8x/MjQ5NjA4L01vbmRp/YWwuanBnP3Y9NjM4/MjA1NTY2OTg1MTMw/MDAw" },
-            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/rASjG9lwKXv57JfW0ooalgJ3A8zN-2EKAZ5NJYyPDH4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/MzFUZ2t5SEozYUwu/anBn" },
-            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/ObKlsJTiLJB3eNKaCCiRArs3ELCREPKOIelaqGLGKgg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NDFZT0hqYk5yYUwu/anBn" },
-            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/BeKvnyFow50rXq0cbi-UpbOxO9FBhD-NbyBOQx2A4K4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/Xzg0MTI2My1NTEI3/MDU0MjMzODM0OV8w/NzIwMjMtRS1qb2dv/LWRlLWxlbmNvbC1x/dWVlbi00LXBlY2Fz/LXBvbnRvLXBhbGl0/by1hbGdvZG8tMjAw/LWZpb3Mud2VicA" },
-            { name: "Conjunto 2 Travesseiros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/btoTIjqEqFREmCFbTpUOwXXJQRDWd_e6am8u2pSeHrY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtcHJvZC5tbWFy/dGFuLmNvbS5ici8z/ODB4MzgwL3BuZy9w/cm9kdWN0cy9waG90/b3Mvc3RpbGwvYmRr/aXQycGNuY2ZrZnUt/MTUzNnB4LTE2NjI0/ODU4NTkyNzIucG5n" },
-            { name: "Edredom Casal Padrão", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/N2W2AaHXpxgr7rEfhQMPisLWiKUOF_z0djLCg3HKUe8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzgyOTQzNy1NTEE4/MTg4ODQ4NjYyOF8w/MTIwMjUtRS53ZWJw" },
-            { name: "Lixeira Inox 3 Litros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/TUxUjtBcVeAbCBgWdXteyKOdv2HG616ziXdbM_ed9Y0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFPenZ1N0pvR0wu/anBn" },
-            { name: "Lixeira Inox 5 Litros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/TUxUjtBcVeAbCBgWdXteyKOdv2HG616ziXdbM_ed9Y0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFPenZ1N0pvR0wu/anBn" },
-            { name: "Conjunto de Sobremesa", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/FHXxAIsdTSK2L81AR1mmeqxlGdI1QP82nVb5wNgJW9I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9OUV9OUF84/NTYwMTAtTUxCNTI4/OTQwMjIzODFfMTIy/MDIyLVcud2VicA" },
-            { name: "Conjunto de Assadeira", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/4DCgtaVJZXn5a1VcGl9iCIkVfFKeVau4caYM1Bg36h4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9OUV9OUF83/MjQ3OTMtTUxCNDg5/NjY0MDA2NjBfMDEy/MDIyLVcud2VicA" },
-            { name: "Processador Elétrico", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://carrefourbr.vtexassets.com/arquivos/ids/186864085/image-0.jpg?v=638775912648730000" },
-            { name: "Lasanheira Grande com Tampa", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/41sSFKPZtzL._AC_UF894,1000_QL80_.jpg" },
-            { name: "Mop de Limpeza", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://diafer.vtexassets.com/arquivos/ids/173749-800-auto?v=637256670432830000&width=800&height=auto&aspect=true" },
-            { name: "Churrasqueira Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://archives.lojasnossolar.com.br/images/nossolar/produtos/4247/171717_171634_P1000.jpg" },
-            { name: "Torradeira Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://jcsbrasil.vteximg.com.br/arquivos/ids/205091-1000-1000/OTOR650.1.jpg?v=637992789832730000" },
-            { name: "Jogo de Cabides + Garrafa de Café", claimed: false, claimantName: "", claimantId: "", imageUrl: ["https://goianita.vteximg.com.br/arquivos/ids/159162-800-800/Jogo-Cabides-6-Pecas---Sanremo.jpg?v=638943288636400000", "https://images.tcdn.com.br/img/img_prod/1177255/garrafa_nordica_preta_1l_38525_1_252e1029d0351c079218274929f0b09d.png"] },
-            { name: "Jogo de Taça", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/61CyifBAeWL._AC_UF894,1000_QL80_.jpg" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
-            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            // EXEMPLO 1: Liquidificador (Usando ARRAY de URLs, a primeira é exibida no card)
+            { 
+                name: "Liquidificador", 
+                claimed: false, 
+                claimantName: "", 
+                claimantId: "", 
+                // A primeira URL é a principal, as outras são opções exibidas no modal
+                imageUrl: [
+                    "uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6", // Imagem Principal
+                    "uploaded:image_059a2f.png-31c09d81-5106-4c18-a698-6c4da9e38347", // Opção 2
+                    "uploaded:image_08c5ff.png-71a1bcab-9300-40b0-af6a-96a89d7e38d8"  // Opção 3
+                ] 
+            }, 
+            
+            // EXEMPLO 2: Batedeira (Atualizado para Array, com um placeholder extra)
+            { 
+                name: "Batedeira", 
+                claimed: false, 
+                claimantName: "", 
+                claimantId: "", 
+                imageUrl: [
+                    "uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6",
+                    "https://placehold.co/400x300/a3c3a2/000000?text=Opção+Batedeira+2" 
+                ] 
+            },
+
+            // EXEMPLO 3: Jogo de Panelas (Mantido como Array de 1 item, apenas a principal)
+            { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 4: Toalhas de Banho 
+            { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 5: Faça de Corte
+            { name: "Faça de Corte (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 6: Travessas de Vidro
+            { name: "Travessas de Vidro (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 7: Aparelho de Jantar
+            { name: "Aparelho de Jantar", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 8: Jogo de Copos
+            { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 9: Potes Herméticos
+            { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 10: Sanduicheira/Grill
+            { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 11: Panela de Pressão
+            { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            
+            // EXEMPLO 12: Ferro de Passar
+            { name: "Ferro de Passar Roupas", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
         ];
         
         // --- Funções de UI ---
@@ -220,6 +263,15 @@
         function renderGiftCard(gift) {
             const isClaimed = gift.claimed;
             
+            // ATUALIZAÇÃO CRÍTICA 1: Obtém a primeira URL da lista de imageUrls para o cartão.
+            const imageUrls = Array.isArray(gift.imageUrl) ? gift.imageUrl : (gift.imageUrl ? [gift.imageUrl] : []);
+            
+            // GARANTIA: Usa a primeira URL válida ou um placeholder genérico
+            const primaryImageUrl = imageUrls[0] || 'https://placehold.co/400x300/cccccc/333333?text=Sem+Imagem';
+            
+            // ATUALIZAÇÃO CRÍTICA 2: Codifica o array completo de URLs para passar ao botão.
+            const imageUrlsJson = encodeURIComponent(JSON.stringify(imageUrls)); 
+
             // Classes e textos baseados no status. Usa a cor 'casamento' para RESERVADO.
             const statusClass = isClaimed ? 'bg-casamento-200 text-casamento-800' : 'bg-green-200 text-green-800';
             const statusText = isClaimed ? 'Reservado' : 'Disponível';
@@ -238,9 +290,10 @@
             return `
                 <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between border-t-4 ${isClaimed ? 'border-casamento-500' : 'border-green-500'}">
                     
-                    <!-- NOVO: Imagem do Produto -->
+                    <!-- Imagem do Produto -->
                     <div class="mb-4 overflow-hidden rounded-lg shadow-md aspect-[4/3] bg-gray-100">
-                        <img src="${gift.imageUrl || 'https://placehold.co/400x300/cccccc/333333?text=Sem+Imagem'}" 
+                        <!-- Usa a PRIMARY_IMAGE_URL -->
+                        <img src="${primaryImageUrl}" 
                              alt="Imagem de ${gift.name}" 
                              class="w-full h-full object-cover transition duration-300 hover:scale-[1.03]"
                              onerror="this.onerror=null; this.src='https://placehold.co/400x300/cccccc/333333?text=Imagem+Indisponível';"
@@ -256,6 +309,7 @@
                     </div>
                     <button data-id="${gift.id}" 
                             data-name="${gift.name}"
+                            data-urls="${imageUrlsJson}"
                             ${isClaimed ? 'disabled' : ''}
                             class="claim-button w-full mt-4 px-4 py-2 text-white font-semibold rounded-lg transition duration-150 ${buttonColor}">
                         ${actionText}
@@ -278,11 +332,11 @@
                  // SE VAZIO: Mostra uma mensagem amigável (ajuda a diagnosticar falha de inicialização)
                  container.innerHTML = `
                     <div class="col-span-full text-center p-10 bg-casamento-100 rounded-xl shadow-inner border border-casamento-300">
-                        <svg class="w-10 h-10 mx-auto text-casamento-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10m0-6h.01"></path></svg>
+                        <svg class="w-10 h-10 mx-auto text-casamento-500 mb-3" fill="none" stroke="currentColor" viewBox="0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10m0-6h.01"></path></svg>
                         <p class="text-xl font-bold text-casamento-700 mb-2">Lista Vazia!</p>
                         <p class="text-gray-600">
                             Parece que os presentes não foram carregados do banco de dados. 
-                            <span class="font-semibold">Verifique o Console do Firebase > Firestore para confirmar se a coleção 'gift_items' existe e se as Regras de Segurança permitem escrita (write) para usuários autenticados.</span>
+                            <span class="font-semibold">Por favor, verifique se você publicou as Regras de Segurança do Firestore que permitem a ESCRITA (write) para usuários autenticados.</span>
                         </p>
                     </div>
                  `;
@@ -296,7 +350,9 @@
                 button.addEventListener('click', (e) => {
                     selectedGiftId = e.currentTarget.dataset.id;
                     const itemName = e.currentTarget.dataset.name;
-                    openClaimModal(itemName);
+                    // NOVO: Pega o JSON string das URLs
+                    const imageUrlsJson = e.currentTarget.dataset.urls; 
+                    openClaimModal(itemName, imageUrlsJson);
                 });
             });
         }
@@ -310,13 +366,53 @@
         const confirmClaimButton = document.getElementById('confirm-claim');
         const cancelClaimButton = document.getElementById('cancel-claim');
         const claimError = document.getElementById('claim-error');
+        const imageGalleryContainer = document.getElementById('image-options-container'); // Referência direta
+        const imageGallery = document.getElementById('image-gallery'); // Referência direta
 
         /**
-         * Abre o modal de reivindicação.
+         * Abre o modal de reivindicação, agora com opções de imagem.
          * @param {string} itemName - Nome do presente a ser reivindicado.
+         * @param {string} imageUrlsJson - JSON string com todas as URLs de imagem.
          */
-        function openClaimModal(itemName) {
+        function openClaimModal(itemName, imageUrlsJson) {
             itemNamePlaceholder.textContent = itemName;
+            
+            // NOVO: Processamento e exibição das imagens
+            imageGallery.innerHTML = ''; // Limpa a galeria
+            
+            let imageUrls = [];
+            try {
+                // Decodifica e faz o parsing do JSON string das URLs
+                imageUrls = JSON.parse(decodeURIComponent(imageUrlsJson));
+            } catch (e) {
+                console.error("Erro ao decodificar URLs:", e);
+                imageUrls = []; 
+            }
+            
+            // VERIFICAÇÃO CRÍTICA: Só exibe a galeria se houver MAIS DE UMA imagem.
+            if (imageUrls.length > 1) {
+                // Exibe todas as opções se houver mais de uma
+                imageUrls.forEach((url, index) => {
+                    imageGallery.innerHTML += `
+                        <div class="p-1 border-2 border-transparent rounded-lg hover:border-casamento-500 transition duration-150 cursor-pointer group">
+                            <img src="${url}" 
+                                 alt="Opção ${index + 1} de ${itemName}" 
+                                 class="w-full h-auto rounded object-cover aspect-video shadow-sm group-hover:shadow-lg"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/200x150/f0f0f0/333333?text=Opção+${index+1}';"
+                            >
+                            <!-- Título opcional para as opções -->
+                            <p class="text-xs text-center text-gray-500 mt-1">Opção ${index + 1}</p>
+                        </div>
+                    `;
+                });
+                // Garante que o container de opções seja visível
+                imageGalleryContainer.classList.remove('hidden');
+            } else {
+                // Oculta o container se houver apenas uma imagem ou nenhuma
+                imageGalleryContainer.classList.add('hidden');
+            }
+
+
             // Tenta pré-preencher o nome do usuário se ele já reservou algo antes
             const storedName = localStorage.getItem('lastClaimantName'); 
             claimantNameInput.value = storedName || ''; 
@@ -382,7 +478,7 @@
             } catch (e) {
                 console.error("Erro CRÍTICO ao inicializar a lista (Verifique as Regras de Escrita!):", e);
                 // Exibe o erro crítico na UI para o administrador
-                document.getElementById('error-text').textContent = `Erro CRÍTICO na Inicialização. Causa provável: Regras de segurança impedindo a ESCRITA (write). Erro: ${e.message}`;
+                document.getElementById('error-text').textContent = `Erro CRÍTICO na Inicialização (Provavelmente permissão de ESCRITA). Erro: ${e.message}`;
                 document.getElementById('error-message').classList.remove('hidden');
                 throw e; // Re-lança para notificar o caller
             }
