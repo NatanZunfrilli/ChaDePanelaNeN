@@ -198,60 +198,40 @@
         // ==================================================================================
         const INITIAL_GIFTS = [
             // EXEMPLO 1: Liquidificador (Usando ARRAY de URLs, a primeira é exibida no card)
-            { 
-                name: "Liquidificador", 
-                claimed: false, 
-                claimantName: "", 
-                claimantId: "", 
-                // A primeira URL é a principal, as outras são opções exibidas no modal
-                imageUrl: [
-                    "uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6", // Imagem Principal
-                    "uploaded:image_059a2f.png-31c09d81-5106-4c18-a698-6c4da9e38347", // Opção 2
-                    "uploaded:image_08c5ff.png-71a1bcab-9300-40b0-af6a-96a89d7e38d8"  // Opção 3
-                ] 
-            }, 
-            
-            // EXEMPLO 2: Batedeira (Atualizado para Array, com um placeholder extra)
-            { 
-                name: "Batedeira", 
-                claimed: false, 
-                claimantName: "", 
-                claimantId: "", 
-                imageUrl: [
-                    "uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6",
-                    "https://placehold.co/400x300/a3c3a2/000000?text=Opção+Batedeira+2" 
-                ] 
-            },
-
-            // EXEMPLO 3: Jogo de Panelas (Mantido como Array de 1 item, apenas a principal)
-            { name: "Jogo de Panelas (Antiaderente)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 4: Toalhas de Banho 
-            { name: "Toalhas de Banho (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 5: Faça de Corte
-            { name: "Faça de Corte (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 6: Travessas de Vidro
-            { name: "Travessas de Vidro (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 7: Aparelho de Jantar
-            { name: "Aparelho de Jantar", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 8: Jogo de Copos
-            { name: "Jogo de Copos e Taças", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 9: Potes Herméticos
-            { name: "Potes Herméticos (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 10: Sanduicheira/Grill
-            { name: "Sanduicheira/Grill", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 11: Panela de Pressão
-            { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
-            
-            // EXEMPLO 12: Ferro de Passar
-            { name: "Ferro de Passar Roupas", claimed: false, claimantName: "", claimantId: "", imageUrl: ["uploaded:image_481d94.jpg-481ab7b0-65a3-4d16-a2bc-7aa0e3c4dad6"] },
+            { name: "Jogo de Copos Grande", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://images.tcdn.com.br/img/img_prod/584235/jogo_6_copos_de_vidro_dubai_530ml_nadir_438983924_1_fa43134db4641243d973ca699f9d5221_20250317123318.jpg" },
+            { name: "Jogo de Toalha", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/EeSvXgJgX5XLVf7036swbad4YaSgv_mUtjlFwWSxmrY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90cnVz/c2FyZGkudnRleGFz/c2V0cy5jb20vYXJx/dWl2b3MvaWRzLzE4/MTU2NS01MDAtNTAw/P3Y9NjM4NjcwMzQ5/MDI2OTAwMDAwJndp/ZHRoPTI2OCZoZWln/aHQ9MjY4JmFzcGVj/dD10cnVl" },
+            { name: "Jogo de Toalha", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/7PavyIddk06UExhIuCqrCuR_GjP-KukJ9Vw9aXi2Z60/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2FzYWFsbWVpZGEu/Y29tLmJyL21lZGlh/L2NhdGFsb2cvcHJv/ZHVjdC83LzkvNzkw/OTMwMTYwMDc2Ml8w/MjAyNTA2MjAxODAz/ODE1MC5qcGc_b3B0/aW1pemU9bWVkaXVt/JmZpdD1ib3VuZHMm/aGVpZ2h0PTM2MCZ3/aWR0aD00MDA" },
+            { name: "Frigideiras Anti-Aderente (Conjunto)", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/FTIIYPuVP5PQfBXsLwDQ4YYrdkWHbPDmh_6mxxzWZ_w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dW5pdmVyc29kb2xh/ci5jb20uYnIvaW1n/LzIwMjAvMDEvcHJv/ZHV0by82OTg0LzIw/MTk4NjYwLTg4Lmpw/Zz9pbXM9Zml0LWlu/LzEyMTB4" },
+            { name: "Tábua de Passar Roupas", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/wc099psjJhehjmMnKnVZElxHCZ1p18LQNRlV_0myrdM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzYwMjczOC1NTEI4/NTM2NjI3MTI0NV8w/NTIwMjUtRS10YWJ1/YS1kZS1wYXNzYXIt/cm91cGEtdGVjaWRv/LXRlcm1pY28tMi1y/ZWd1bGFnZW5zLXBy/b21vY28ud2VicA" },
+            { name: "Jogo de Talheres Inox-Alumínio", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/lcn_41MHHOwOhTYKoSOoBxwKRsKj21E4emohZXF_0o4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzkxNTMxMy1NTEI1/MTYwNjUwOTkyOV8w/OTIwMjItRS1mYXF1/ZWlyby1seW9uLWNv/bS0yNC1wZWNhcy1l/bS1hY28taW5veC1i/cmlub3gud2VicA" },
+            { name: "Panela de Arroz Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/ClaiSfUTzR8IObmHzrmn6guPzAKtnzb6BYePHVemapo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzY2OTcyNC1NTEE4/MjY1NDE5MTExNl8w/MzIwMjUtVi53ZWJw" },
+            { name: "Liquidificador", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/MoJu8MjMstIEh_ho-3GR4oGJpZwScQqUdqIHAbbxjGk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzkyNDI5MS1NTEI5/NDM4MDA5MDAzOV8x/MDIwMjUtVi53ZWJw" },
+            { name: "Batedeira", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/LOoccZsVAdrjY6XgV1D4PBfv93F5yKsRbqbwsMHZsoI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90ZWxo/YW5vcnRlLnZ0ZXhh/c3NldHMuY29tL2Fy/cXVpdm9zL2lkcy8x/MjQ5NjA4L01vbmRp/YWwuanBnP3Y9NjM4/MjA1NTY2OTg1MTMw/MDAw" },
+            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/rASjG9lwKXv57JfW0ooalgJ3A8zN-2EKAZ5NJYyPDH4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/MzFUZ2t5SEozYUwu/anBn" },
+            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/ObKlsJTiLJB3eNKaCCiRArs3ELCREPKOIelaqGLGKgg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NDFZT0hqYk5yYUwu/anBn" },
+            { name: "Jogo de Cama 4 peças", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/BeKvnyFow50rXq0cbi-UpbOxO9FBhD-NbyBOQx2A4K4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/Xzg0MTI2My1NTEI3/MDU0MjMzODM0OV8w/NzIwMjMtRS1qb2dv/LWRlLWxlbmNvbC1x/dWVlbi00LXBlY2Fz/LXBvbnRvLXBhbGl0/by1hbGdvZG8tMjAw/LWZpb3Mud2VicA" },
+            { name: "Conjunto 2 Travesseiros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/btoTIjqEqFREmCFbTpUOwXXJQRDWd_e6am8u2pSeHrY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtcHJvZC5tbWFy/dGFuLmNvbS5ici8z/ODB4MzgwL3BuZy9w/cm9kdWN0cy9waG90/b3Mvc3RpbGwvYmRr/aXQycGNuY2ZrZnUt/MTUzNnB4LTE2NjI0/ODU4NTkyNzIucG5n" },
+            { name: "Edredom Casal Padrão", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/N2W2AaHXpxgr7rEfhQMPisLWiKUOF_z0djLCg3HKUe8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9RX05QXzJY/XzgyOTQzNy1NTEE4/MTg4ODQ4NjYyOF8w/MTIwMjUtRS53ZWJw" },
+            { name: "Lixeira Inox 3 Litros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/TUxUjtBcVeAbCBgWdXteyKOdv2HG616ziXdbM_ed9Y0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFPenZ1N0pvR0wu/anBn" },
+            { name: "Lixeira Inox 5 Litros", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/TUxUjtBcVeAbCBgWdXteyKOdv2HG616ziXdbM_ed9Y0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NTFPenZ1N0pvR0wu/anBn" },
+            { name: "Conjunto de Sobremesa", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/FHXxAIsdTSK2L81AR1mmeqxlGdI1QP82nVb5wNgJW9I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9OUV9OUF84/NTYwMTAtTUxCNTI4/OTQwMjIzODFfMTIy/MDIyLVcud2VicA" },
+            { name: "Conjunto de Assadeira", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://imgs.search.brave.com/4DCgtaVJZXn5a1VcGl9iCIkVfFKeVau4caYM1Bg36h4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9odHRw/Mi5tbHN0YXRpYy5j/b20vRF9OUV9OUF83/MjQ3OTMtTUxCNDg5/NjY0MDA2NjBfMDEy/MDIyLVcud2VicA" },
+            { name: "Processador Elétrico", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://carrefourbr.vtexassets.com/arquivos/ids/186864085/image-0.jpg?v=638775912648730000" },
+            { name: "Lasanheira Grande com Tampa", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/41sSFKPZtzL._AC_UF894,1000_QL80_.jpg" },
+            { name: "Mop de Limpeza", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://diafer.vtexassets.com/arquivos/ids/173749-800-auto?v=637256670432830000&width=800&height=auto&aspect=true" },
+            { name: "Churrasqueira Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://archives.lojasnossolar.com.br/images/nossolar/produtos/4247/171717_171634_P1000.jpg" },
+            { name: "Torradeira Elétrica", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://jcsbrasil.vteximg.com.br/arquivos/ids/205091-1000-1000/OTOR650.1.jpg?v=637992789832730000" },
+            { name: "Jogo de Cabides + Garrafa de Café", claimed: false, claimantName: "", claimantId: "", imageUrl: ["https://goianita.vteximg.com.br/arquivos/ids/159162-800-800/Jogo-Cabides-6-Pecas---Sanremo.jpg?v=638943288636400000", "https://images.tcdn.com.br/img/img_prod/1177255/garrafa_nordica_preta_1l_38525_1_252e1029d0351c079218274929f0b09d.png"] },
+            { name: "Jogo de Taça", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/61CyifBAeWL._AC_UF894,1000_QL80_.jpg" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
+            { name: "", claimed: false, claimantName: "", claimantId: "", imageUrl: "" },
         ];
         
         // --- Funções de UI ---
