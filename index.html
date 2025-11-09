@@ -131,9 +131,9 @@
 
             <!-- NOVO: Container para as opções de imagem -->
             <div id="image-options-container" class="mb-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
-                <p class="text-sm font-semibold text-gray-700 mb-2">Opções de Imagem/Estilo:</p>
-                <!-- Galeria de imagens -->
-                <div id="image-gallery" class="grid grid-cols-2 gap-2">
+                <p class="text-sm font-semibold text-gray-700 mb-2">Opções de Estilo/Marca (Apenas Referência):</p>
+                <!-- Galeria de imagens - MUDANÇA: Agora com grid-cols-3 para melhor visualização -->
+                <div id="image-gallery" class="grid grid-cols-3 gap-2">
                     <!-- Imagens serão injetadas aqui -->
                 </div>
             </div>
@@ -241,12 +241,12 @@
             { name: "Jogo de Café e Chá", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://www.havan.com.br/media/catalog/product/cache/73a52df140c4d19dbec2b6c485ea6a50/j/o/jogo-de-cha-biona-new-trama-blue-havan-casa_878711.jpg" },
             { name: "Panela de Pressão", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://www.havan.com.br/media/catalog/product/cache/73a52df140c4d19dbec2b6c485ea6a50/p/a/panela-de-pressao-com-visor-superior-superflon-mta-6-litros_1010058.webp" },
             { name: "Conjunto Mesa Eiffel 90cm Preta + 4 Cadeiras Dsw Eiffel Design", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkTw0ofPAU7Kc9aV2-acENaIhLRzDpHrWu2g&s" },
-            { name: "Kit sousplat", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://images.yampi.me/assets/stores/lindacasa/uploads/images/kit-6pcs-jogo-americano-redondo-suplat-sousplat-mesa-posta-verde-6183c7f083bc8-medium.jpg" },
+            { name: "Kit Sousplat", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://images.yampi.me/assets/stores/lindacasa/uploads/images/kit-6pcs-jogo-americano-redondo-suplat-sousplat-mesa-posta-verde-6183c7f083bc8-medium.jpg" },
             { name: "Kit Saleiro e Açucareiro Porcelana", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://down-br.img.susercontent.com/file/sg-11134201-7rcca-ltxs38qt2mfgfa" },
             { name: "Passadeira de Cozinha", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://www.ddbartesanato.com.br/cdn/shop/products/WhatsAppImage2023-04-18at10.37.43.jpg?v=1681825240" },
-            { name: "Escorredor de Prato", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/61TIzYjXs1L._AC_UF894,1000_QL80_.jpg" },
+            { name: "Escorredor de Louças Inox", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/61TIzYjXs1L._AC_UF894,1000_QL80_.jpg" },
             { name: "Jogo de Facas", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://m.media-amazon.com/images/I/61PPolYwilL._AC_UF894,1000_QL80_.jpg" },
-            { name: "Cortador de Legumes + Rolo de Macarrão", claimed: false, claimantName: "", claimantId: "", imageUrl: ["]https://m.media-amazon.com/images/I/716eETQf4RL._AC_UF894,1000_QL80_.jpg", "https://static.bomprecomagazine.com.br/public/bomprecomagazine/imagens/produtos/rolo-para-massa-madeira-33cm-imporiente-668edcfb41829.jpg"]},
+            { name: "Cortador de Legumes + Rolo de Macarrão", claimed: false, claimantName: "", claimantId: "", imageUrl: ["https://m.media-amazon.com/images/I/716eETQf4RL._AC_UF894,1000_QL80_.jpg", "https://static.bomprecomagazine.com.br/public/bomprecomagazine/imagens/produtos/rolo-para-massa-madeira-33cm-imporiente-668edcfb41829.jpg"]},
             { name: "Porta Papel Higiênico + Medidor de Xícaras", claimed: false, claimantName: "", claimantId: "", imageUrl: ["https://images.tcdn.com.br/img/img_prod/750752/porta_papel_higienico_de_chao_suporte_papeleira_cromado_arm_2643_1_c940c37706e6898f032b8adff667c5d0.jpg", "https://m.media-amazon.com/images/I/517UyE9lwdL._AC_UF894,1000_QL80_.jpg"]},
             { name: "Tábua de Churrasco + Garfo de Churrasco", claimed: false, claimantName: "", claimantId: "", imageUrl: ["https://images.tcdn.com.br/img/img_prod/769607/tabua_churrasco_em_madeira_natural_45_x_28_x_2_8_personalizada_5131_1_eb014a15f4b1524e4f922109d010c30e.jpeg", "https://lojamor.vtexassets.com/arquivos/ids/181617/003307-Garfo-para-Churrasco-Emb-2.jpg?v=638300474010470000"]},
             { name: "Pix R$ 60,00", claimed: false, claimantName: "", claimantId: "", imageUrl: "https://transfeera.com/wp-content/uploads/2021/02/opcao-03.jpg" },
@@ -401,15 +401,15 @@
             if (imageUrls.length > 1) {
                 // Exibe todas as opções se houver mais de uma
                 imageUrls.forEach((url, index) => {
+                    // MUDANÇA: Remover classes de interação (hover, border, cursor-pointer)
                     imageGallery.innerHTML += `
-                        <div class="p-1 border-2 border-transparent rounded-lg hover:border-casamento-500 transition duration-150 cursor-pointer group">
+                        <div class="p-1 rounded-lg"> 
                             <img src="${url}" 
                                  alt="Opção ${index + 1} de ${itemName}" 
-                                 class="w-full h-auto rounded object-cover aspect-video shadow-sm group-hover:shadow-lg"
+                                 class="w-full h-auto rounded object-cover aspect-video shadow-sm"
                                  onerror="this.onerror=null; this.src='https://placehold.co/200x150/f0f0f0/333333?text=Opção+${index+1}';"
                             >
-                            <!-- Título opcional para as opções -->
-                            <p class="text-xs text-center text-gray-500 mt-1">Opção ${index + 1}</p>
+                            <!-- MUDANÇA: Removeu a mensagem "Opção X" -->
                         </div>
                     `;
                 });
